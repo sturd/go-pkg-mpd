@@ -6,19 +6,19 @@ package mpd
 
 import "os"
 
-func disableoutput(cmd *Command, c *Client) (err os.Error) {
+func disableoutput(cmd *Command, c *Client) os.Error {
 	return c.request("disableoutput %d", cmd.I("id", 0))
 }
 
-func enableoutput(cmd *Command, c *Client) (err os.Error) {
+func enableoutput(cmd *Command, c *Client) os.Error {
 	return c.request("enableoutput %d", cmd.I("id", 0))
 }
 
-func kill(cmd *Command, c *Client) (err os.Error) {
+func kill(cmd *Command, c *Client) os.Error {
 	return c.request("kill")
 }
 
-func update(cmd *Command, c *Client) (err os.Error) {
+func update(cmd *Command, c *Client) os.Error {
 	var path string
 	if path = cmd.S("path", ""); path == "" {
 		return c.request("update")

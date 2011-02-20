@@ -4,10 +4,12 @@
 
 package mpd
 
-import "os"
-import "fmt"
+import (
+	"os"
+	"fmt"
+)
 
-func find(cmd *Command, c *Client) (err os.Error) {
+func find(cmd *Command, c *Client) os.Error {
 	return c.requestList(
 		"find \"%s\" \"%s\"",
 		cmd.S("tag", "any"),
@@ -42,6 +44,7 @@ func list(cmd *Command, c *Client) (err os.Error) {
 			fmt.Printf("%s\n", v)
 		}
 	}
+
 	return
 }
 
@@ -64,10 +67,11 @@ func listall(cmd *Command, c *Client) (err os.Error) {
 			fmt.Printf("%s\n", v)
 		}
 	}
+
 	return
 }
 
-func listallinfo(cmd *Command, c *Client) (err os.Error) {
+func listallinfo(cmd *Command, c *Client) os.Error {
 	path := cmd.S("path", "")
 	if path == "" {
 		return c.requestList("listallinfo")
@@ -100,7 +104,7 @@ func lsinfo(cmd *Command, c *Client) (err os.Error) {
 	return
 }
 
-func search(cmd *Command, c *Client) (err os.Error) {
+func search(cmd *Command, c *Client) os.Error {
 	return c.requestList(
 		"search \"%s\" \"%s\"",
 		cmd.S("tag", "any"),
@@ -108,7 +112,7 @@ func search(cmd *Command, c *Client) (err os.Error) {
 	)
 }
 
-func count(cmd *Command, c *Client) (err os.Error) {
+func count(cmd *Command, c *Client) os.Error {
 	return c.requestList(
 		"count \"%s\" \"%s\"",
 		cmd.S("tag", "any"),

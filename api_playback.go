@@ -21,15 +21,15 @@ func toggle(cmd *Command, c *Client) (err os.Error) {
 	return c.request("play")
 }
 
-func crossfade(cmd *Command, c *Client) (err os.Error) {
+func crossfade(cmd *Command, c *Client) os.Error {
 	return c.request("crossfade %d", cmd.I("time", 0))
 }
 
-func next(cmd *Command, c *Client) (err os.Error) {
+func next(cmd *Command, c *Client) os.Error {
 	return c.request("next")
 }
 
-func pause(cmd *Command, c *Client) (err os.Error) {
+func pause(cmd *Command, c *Client) os.Error {
 	t := cmd.S("toggle", "")
 	v := 0
 	if t == "on" {
@@ -38,19 +38,19 @@ func pause(cmd *Command, c *Client) (err os.Error) {
 	return c.request("pause %d", v)
 }
 
-func play(cmd *Command, c *Client) (err os.Error) {
+func play(cmd *Command, c *Client) os.Error {
 	return c.request("play %d", cmd.I("pos", 0))
 }
 
-func playid(cmd *Command, c *Client) (err os.Error) {
+func playid(cmd *Command, c *Client) os.Error {
 	return c.request("playid %d", cmd.I("id", 0))
 }
 
-func previous(cmd *Command, c *Client) (err os.Error) {
+func previous(cmd *Command, c *Client) os.Error {
 	return c.request("previous")
 }
 
-func random(cmd *Command, c *Client) (err os.Error) {
+func random(cmd *Command, c *Client) os.Error {
 	t := cmd.S("toggle", "")
 	v := 0
 	if t == "on" {
@@ -59,7 +59,7 @@ func random(cmd *Command, c *Client) (err os.Error) {
 	return c.request("random %d", v)
 }
 
-func repeat(cmd *Command, c *Client) (err os.Error) {
+func repeat(cmd *Command, c *Client) os.Error {
 	t := cmd.S("toggle", "")
 	v := 0
 	if t == "on" {
@@ -68,7 +68,7 @@ func repeat(cmd *Command, c *Client) (err os.Error) {
 	return c.request("repeat %d", v)
 }
 
-func seek(cmd *Command, c *Client) (err os.Error) {
+func seek(cmd *Command, c *Client) os.Error {
 	return c.request(
 		"seek %d %d",
 		cmd.I("pos", 0),
@@ -76,7 +76,7 @@ func seek(cmd *Command, c *Client) (err os.Error) {
 	)
 }
 
-func seekid(cmd *Command, c *Client) (err os.Error) {
+func seekid(cmd *Command, c *Client) os.Error {
 	return c.request(
 		"seekid %d %d",
 		cmd.I("id", 0),
@@ -123,6 +123,6 @@ func volume(cmd *Command, c *Client) (err os.Error) {
 	return c.request("setvol %d", v)
 }
 
-func stop(cmd *Command, c *Client) (err os.Error) {
+func stop(cmd *Command, c *Client) os.Error {
 	return c.request("stop")
 }

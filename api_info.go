@@ -9,7 +9,7 @@ import (
 	"fmt"
 )
 
-func status(cmd *Command, c *Client) (err os.Error) {
+func status(cmd *Command, c *Client) os.Error {
 	return c.request("status")
 }
 
@@ -27,26 +27,26 @@ func simplestatus(cmd *Command, c *Client) (err os.Error) {
 	return
 }
 
-func stats(cmd *Command, c *Client) (err os.Error) {
+func stats(cmd *Command, c *Client) os.Error {
 	return c.request("stats")
 }
 
-func outputs(cmd *Command, c *Client) (err os.Error) {
+func outputs(cmd *Command, c *Client) os.Error {
 	return c.requestList("outputs")
 }
 
-func commands(cmd *Command, c *Client) (err os.Error) {
+func commands(cmd *Command, c *Client) os.Error {
 	return c.requestList("commands")
 }
 
-func notcommands(cmd *Command, c *Client) (err os.Error) {
+func notcommands(cmd *Command, c *Client) os.Error {
 	return c.requestList("notcommands")
 }
 
-func tagtypes(cmd *Command, c *Client) (err os.Error) {
+func tagtypes(cmd *Command, c *Client) os.Error {
 	return c.requestList("tagtypes")
 }
 
-func urlhandlers(cmd *Command, c *Client) (err os.Error) {
+func urlhandlers(cmd *Command, c *Client) os.Error {
 	return c.requestList("urlhandlers")
 }

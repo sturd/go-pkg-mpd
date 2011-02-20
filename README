@@ -6,6 +6,11 @@
  programs. For an example implementation, refer to 
  github.com/jteeuwen/go-app-mpc
 
+ Connection information can be passed explicitely through the mpd.Config struct.
+ The default values for host, port and password are either "127.0.0.1", 6667 and
+ "" respectively, or set to the MPD_HOST, MPD_PORT and MPD_PASSWORD environment
+ variables if they exist.
+
  Supported commands:
 
  disableoutput: Turns an audio-output source off.

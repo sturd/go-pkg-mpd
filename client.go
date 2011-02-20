@@ -56,10 +56,12 @@ func (this *Client) Open(protocol, address string) (err os.Error) {
 	}
 
 	if data = strings.TrimSpace(data); len(data) == 0 {
+		this.Close()
 		return os.NewError("No valid handshake received.")
 	}
 
 	if data[0:3] == "ACK" {
+		this.Close()
 		return os.NewError(fmt.Sprintf("Handshake error: %s", data[4:]))
 	}
 
@@ -70,24 +72,22 @@ func (this *Client) Open(protocol, address string) (err os.Error) {
 			SupportedVersion[0], SupportedVersion[1], SupportedVersion[2],
 			this.ProtocolVersion,
 		))
+		this.Close()
 	}
+
 	return
 }
 
-func (this *Client) Close() (err os.Error) {
-	if err = this.send("close"); err != nil {
-		return
-	}
-
-	this.reader = nil
-	this.writer = nil
-
+func (this *Client) Close() {
 	if this.tcp != nil {
-		err = this.tcp.Close()
+		this.send("close")
+
+		this.reader = nil
+		this.writer = nil
+
+		this.tcp.Close()
 		this.tcp = nil
 	}
-
-	return
 }
 
 func (this *Client) parseError(line string) os.Error {
@@ -180,7 +180,6 @@ func (this *Client) receiveList() (data []Args, err os.Error) {
 		return nil, os.NewError("Stream reader is closed.")
 	}
 
-	data = make([]Args, 0)
 	a := make(Args)
 
 	for {
@@ -211,7 +210,7 @@ func (this *Client) receiveList() (data []Args, err os.Error) {
 				if len(a) > 0 {
 					data = append(data, a)
 				}
-				a = Args{}
+				a = make(Args)
 			}
 
 			a[line[0:pos]] = strings.TrimSpace(line[pos+1:])

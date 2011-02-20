@@ -9,11 +9,11 @@ import (
 	"fmt"
 )
 
-func add(cmd *Command, c *Client) (err os.Error) {
+func add(cmd *Command, c *Client) os.Error {
 	return c.request("add \"%s\"", cmd.S("path", ""))
 }
 
-func addid(cmd *Command, c *Client) (err os.Error) {
+func addid(cmd *Command, c *Client) os.Error {
 	pos := cmd.I("pos", -1)
 	if pos > -1 {
 		return c.request("addid \"%s\" %d", cmd.S("path", ""), pos)
@@ -21,7 +21,7 @@ func addid(cmd *Command, c *Client) (err os.Error) {
 	return c.request("addid \"%s\"")
 }
 
-func clear(cmd *Command, c *Client) (err os.Error) {
+func clear(cmd *Command, c *Client) os.Error {
 	return c.request("clear")
 }
 
@@ -42,40 +42,40 @@ func current(cmd *Command, c *Client) (err os.Error) {
 	return
 }
 
-func delete(cmd *Command, c *Client) (err os.Error) {
+func delete(cmd *Command, c *Client) os.Error {
 	return c.request("delete %d", cmd.I("pos", 0))
 }
 
-func deleteid(cmd *Command, c *Client) (err os.Error) {
+func deleteid(cmd *Command, c *Client) os.Error {
 	return c.request("deleteid %d", cmd.I("id", 0))
 }
 
-func load(cmd *Command, c *Client) (err os.Error) {
+func load(cmd *Command, c *Client) os.Error {
 	return c.request("load \"%s\"", cmd.S("name", ""))
 }
 
-func rename(cmd *Command, c *Client) (err os.Error) {
+func rename(cmd *Command, c *Client) os.Error {
 	return c.request("rename \"%s\" \"%s\"",
 		cmd.S("oldname", ""),
 		cmd.S("newname", ""),
 	)
 }
 
-func move(cmd *Command, c *Client) (err os.Error) {
+func move(cmd *Command, c *Client)os.Error {
 	return c.request("move %d %d",
 		cmd.I("src", 0),
 		cmd.I("dest", 0),
 	)
 }
 
-func moveid(cmd *Command, c *Client) (err os.Error) {
+func moveid(cmd *Command, c *Client) os.Error {
 	return c.request("moveid %d %d",
 		cmd.I("src", 0),
 		cmd.I("dest", 0),
 	)
 }
 
-func plinfo(cmd *Command, c *Client) (err os.Error) {
+func plinfo(cmd *Command, c *Client) os.Error {
 	pos := cmd.I("pos", -1)
 	if pos == -1 {
 		return c.requestList("playlistinfo")
@@ -83,7 +83,7 @@ func plinfo(cmd *Command, c *Client) (err os.Error) {
 	return c.requestList("playlistinfo %d", pos)
 }
 
-func plchanges(cmd *Command, c *Client) (err os.Error) {
+func plchanges(cmd *Command, c *Client) os.Error {
 	return c.requestList("plchanges %d", cmd.I("version", 0))
 }
 
@@ -99,26 +99,26 @@ func plchangesid(cmd *Command, c *Client) (err os.Error) {
 	return
 }
 
-func rm(cmd *Command, c *Client) (err os.Error) {
+func rm(cmd *Command, c *Client) os.Error {
 	return c.request("rm \"%s\"", cmd.S("name", ""))
 }
 
-func save(cmd *Command, c *Client) (err os.Error) {
+func save(cmd *Command, c *Client) os.Error {
 	return c.request("save \"%s\"", cmd.S("name", ""))
 }
 
-func shuffle(cmd *Command, c *Client) (err os.Error) {
+func shuffle(cmd *Command, c *Client) os.Error {
 	return c.request("shuffle")
 }
 
-func swap(cmd *Command, c *Client) (err os.Error) {
+func swap(cmd *Command, c *Client) os.Error {
 	return c.request("swap %d %d",
 		cmd.I("pos1", 0),
 		cmd.I("pos2", 0),
 	)
 }
 
-func swapid(cmd *Command, c *Client) (err os.Error) {
+func swapid(cmd *Command, c *Client) os.Error {
 	return c.request("swapid %d %d",
 		cmd.I("id1", 0),
 		cmd.I("id2", 0),
@@ -140,29 +140,29 @@ func listpl(cmd *Command, c *Client) (err os.Error) {
 	return
 }
 
-func listplinfo(cmd *Command, c *Client) (err os.Error) {
+func listplinfo(cmd *Command, c *Client) os.Error {
 	return c.requestList("listplaylistinfo \"%s\"", cmd.S("name", ""))
 }
 
-func pladd(cmd *Command, c *Client) (err os.Error) {
+func pladd(cmd *Command, c *Client) os.Error {
 	return c.request("playlistadd \"%s\" \"%s\"",
 		cmd.S("name", ""),
 		cmd.S("path", ""),
 	)
 }
 
-func plclear(cmd *Command, c *Client) (err os.Error) {
+func plclear(cmd *Command, c *Client) os.Error {
 	return c.request("playlistclear \"%s\"", cmd.S("name", ""))
 }
 
-func pldelete(cmd *Command, c *Client) (err os.Error) {
+func pldelete(cmd *Command, c *Client) os.Error {
 	return c.request("playlistdelete \"%s\" %d",
 		cmd.S("name", ""),
 		cmd.I("id", 0),
 	)
 }
 
-func plmove(cmd *Command, c *Client) (err os.Error) {
+func plmove(cmd *Command, c *Client) os.Error {
 	return c.request("playlistmove \"%s\" %d %d",
 		cmd.S("name", ""),
 		cmd.I("id", 0),
