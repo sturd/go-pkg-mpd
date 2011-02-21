@@ -4,125 +4,135 @@
 
 package mpd
 
-import (
-	"os"
-	"strconv"
-)
+import "os"
 
-func toggle(cmd *Command, c *Client) (err os.Error) {
+// Toggles between play/pause.
+func (this *Client) Toggle() (err os.Error) {
 	var arg Args
-	if arg, err = c.requestArgs("status"); err != nil {
+	if arg, err = this.request("status"); err != nil {
 		return
 	}
 
 	if arg["state"] == "play" {
-		return c.request("pause 1")
+		_, err = this.request("pause 1")
+	} else {
+		_, err = this.request("play")
 	}
-	return c.request("play")
+	return
 }
 
-func crossfade(cmd *Command, c *Client) os.Error {
-	return c.request("crossfade %d", cmd.I("time", 0))
+// Sets crossfading (mixing) between songs.
+// @time: Crossfade time in seconds.
+func (this *Client) Crossfade(time int) (err os.Error) {
+	_, err = this.request("crossfade %d", time)
+	return
 }
 
-func next(cmd *Command, c *Client) os.Error {
-	return c.request("next")
-}
-
-func pause(cmd *Command, c *Client) os.Error {
-	t := cmd.S("toggle", "")
+// Toggle pause on/off.
+// @toggle: Specifies whether to pause or resume playback.
+func (this *Client) Pause(toggle bool) (err os.Error) {
 	v := 0
-	if t == "on" {
+	if toggle {
 		v = 1
 	}
-	return c.request("pause %d", v)
+	_, err = this.request("pause %d", v)
+	return
 }
 
-func play(cmd *Command, c *Client) os.Error {
-	return c.request("play %d", cmd.I("pos", 0))
+// Play the song at the specified position.
+// @pos: Position of song to play.
+func (this *Client) Play(pos int) (err os.Error) {
+	_, err = this.request("play %d", pos)
+	return
 }
 
-func playid(cmd *Command, c *Client) os.Error {
-	return c.request("playid %d", cmd.I("id", 0))
+// Play the song with the specified id.
+// @id: Id of the song to play.
+func (this *Client) PlayId(id int) (err os.Error) {
+	_, err = this.request("playid %d", id)
+	return
 }
 
-func previous(cmd *Command, c *Client) os.Error {
-	return c.request("previous")
+// Skip to previous song.
+func (this *Client) Previous() (err os.Error) {
+	_, err = this.request("previous")
+	return
 }
 
-func random(cmd *Command, c *Client) os.Error {
-	t := cmd.S("toggle", "")
+// Skip to next song.
+func (this *Client) Next() (err os.Error) {
+	_, err = this.request("next")
+	return
+}
+
+// Toggle random mode on/of
+// @toggle: Specifies whether to used random or normal playback.
+func (this *Client) Random(toggle bool) (err os.Error) {
 	v := 0
-	if t == "on" {
+	if toggle {
 		v = 1
 	}
-	return c.request("random %d", v)
+	_, err = this.request("random %d", v)
+	return
 }
 
-func repeat(cmd *Command, c *Client) os.Error {
-	t := cmd.S("toggle", "")
+// Toggle repeat mode on/off.
+// @toggle: Specifies whether to ise repeat or not.
+func (this *Client) Repeat(toggle bool) (err os.Error) {
 	v := 0
-	if t == "on" {
+	if toggle {
 		v = 1
 	}
-	return c.request("repeat %d", v)
+	_, err = this.request("repeat %d", v)
+	return
 }
 
-func seek(cmd *Command, c *Client) os.Error {
-	return c.request(
-		"seek %d %d",
-		cmd.I("pos", 0),
-		cmd.I("time", 0),
-	)
+// Skip to specific point in time in song at position @pos.
+// @pos: Position of song.
+// @time: Time in seconds to jump to.
+func (this *Client) Seek(pos, time int) (err os.Error) {
+	_, err = this.request("seek %d %d", pos, time)
+	return
 }
 
-func seekid(cmd *Command, c *Client) os.Error {
-	return c.request(
-		"seekid %d %d",
-		cmd.I("id", 0),
-		cmd.I("time", 0),
-	)
+// Skip to specific point in time in song at position @pos.
+// @pos: Id of song.
+// @time: Time in seconds to jump to.
+func (this *Client) SeekId(id, time int) (err os.Error) {
+	_, err = this.request("seekid %d %d", id, time)
+	return
 }
 
-func volume(cmd *Command, c *Client) (err os.Error) {
-	v := cmd.I("value", -1)
-	if v < 0 || v > 100 {
-		return os.NewError("Volume must be in the range 0-100.")
-	}
+// Volume adjustment. Allows setting of explicit volume value as well as a
+// relative increase and decrease of current volume.
+// @vol: New volume value in range 0-100.
+// @relative: Indicates if our value is an absolute volume, or relative
+// adjustment from the current volume.
+func (this *Client) Volume(vol byte, relative bool) (err os.Error) {
+	if relative {
+		var a Args
 
-	if s := cmd.S("sign", ""); s != "" {
-		var arg Args
-		var cv int
-
-		if s != "+" && s != "-" {
-			// this should be caught by the patSign regex pattern, but the current
-			// regexp implementation has some issues with escaping +/- signs. eg:
-			// it isn't supported at all.
-			return os.NewError("Invalid value for parameter @sign. Expected + or -")
-		}
-
-		if arg, err = c.requestArgs("status"); err != nil {
+		if a, err = this.request("status"); err != nil {
 			return
 		}
 
-		if cv, err = strconv.Atoi(arg["volume"]); err != nil {
-			return
-		}
-
-		if s == "+" {
-			if v += cv; v > 100 {
-				v = 100
-			}
-		} else {
-			if v = cv - v; v < 0 {
-				v = 0
-			}
-		}
+		vol += a.U8("volume")
 	}
 
-	return c.request("setvol %d", v)
+	if vol < 0 {
+		vol = 0
+	}
+
+	if vol > 100 {
+		vol = 100
+	}
+
+	_, err = this.request("setvol %d", vol)
+	return
 }
 
-func stop(cmd *Command, c *Client) os.Error {
-	return c.request("stop")
+// Stop playback.
+func (this *Client) Stop() (err os.Error) {
+	_, err = this.request("stop")
+	return
 }

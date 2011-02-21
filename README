@@ -3,13 +3,7 @@
 ================================================================================
 
  This package wraps the MPD API. It lets you control MPD through your own
- programs. For an example implementation, refer to 
- github.com/jteeuwen/go-app-mpc
-
- Connection information can be passed explicitely through the mpd.Config struct.
- The default values for host, port and password are either "127.0.0.1", 6667 and
- "" respectively, or set to the MPD_HOST, MPD_PORT and MPD_PASSWORD environment
- variables if they exist.
+ programs. For usage examples, refer to _test.go
 
  Supported commands:
 
@@ -23,7 +17,6 @@
                 metadata from the database that are no longer in the directory.
         status: Reports the current status of MPD, as well as the current
                 settings of some playback options.
-  simplestatus: Same as status, but only basic info in 'prettier' output.
          stats: Reports database and playlist statistics.
        outputs: Reports information about all known audio output devices.
       commands: Reports which commands the current user has access to.
@@ -60,7 +53,6 @@
         moveid: Moves a song with id @src to position @dest.
         plinfo: Reports metadata for songs in the playlist.
      plchanges: Reports changed songs currently in the playlist since @version.
-   plchangesid: Same as plchanges, but returns only the songids.
             rm: Removes the playlist called @name from the playlist directory.
           save: Saves the current playlist to @name in the playlist directory.
        shuffle: Shuffles the current playlist, increments playlist version by 1.

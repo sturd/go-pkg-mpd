@@ -19,75 +19,74 @@ import (
 var SupportedVersion = [3]int{0, 15, 0}
 
 type Client struct {
-	tcp             net.Conn
+	conn            net.Conn
 	writer          *bufio.Writer
 	reader          *bufio.Reader
-	Protocol        string
-	Address         string
 	ProtocolVersion string
 }
 
-func newClient() *Client {
-	return &Client{}
-}
+// This Opens a new connection to the specified MPD server and optionally
+// logs in with the given password.
+func Dial(address, password string) (c *Client, err os.Error) {
+	c = new(Client)
 
-func (this *Client) IsConnected() bool {
-	return this.tcp != nil
-}
-
-func (this *Client) Open(protocol, address string) (err os.Error) {
-	this.Protocol = protocol
-	this.Address = address
-
-	if this.tcp, err = net.Dial(protocol, "", address); err != nil {
+	if c.conn, err = net.Dial("tcp", "", address); err != nil {
 		return
 	}
 
-	this.reader = bufio.NewReader(this.tcp)
-	this.writer = bufio.NewWriter(this.tcp)
+	c.reader = bufio.NewReader(c.conn)
+	c.writer = bufio.NewWriter(c.conn)
 
 	// Complete handshake. Server should send 'OK MPD 0.15.0'. This is the
 	// protocol version, not the version of the MPD daemon itself. We can use it
 	// to test if our program is compatible with the api exposed by the daemon.
 	var data string
-	if data, err = this.reader.ReadString('\n'); err != nil {
-		this.Close()
-		return
+	if data, err = c.reader.ReadString('\n'); err != nil {
+		c.Close()
+		return nil, err
 	}
 
 	if data = strings.TrimSpace(data); len(data) == 0 {
-		this.Close()
-		return os.NewError("No valid handshake received.")
+		c.Close()
+		return nil, os.NewError("No valid handshake received.")
 	}
 
 	if data[0:3] == "ACK" {
-		this.Close()
-		return os.NewError(fmt.Sprintf("Handshake error: %s", data[4:]))
+		c.Close()
+		return nil, os.NewError(fmt.Sprintf("Handshake error: %s", data[4:]))
 	}
 
-	this.ProtocolVersion = data[3:]
-	if !isSupportedVersion(this.ProtocolVersion) {
-		err = os.NewError(fmt.Sprintf(
+	c.ProtocolVersion = data[3:]
+	if !isSupportedVersion(c.ProtocolVersion) {
+		c.Close()
+		return nil, os.NewError(fmt.Sprintf(
 			"Invalid protocol version. This library requires at least 'MPD %d.%d.%d'. Server sent '%s'.",
 			SupportedVersion[0], SupportedVersion[1], SupportedVersion[2],
-			this.ProtocolVersion,
+			c.ProtocolVersion,
 		))
-		this.Close()
+	}
+
+	if len(password) > 0 {
+		_, err = c.request("password \"%s\"", password)
 	}
 
 	return
 }
 
-func (this *Client) Close() {
-	if this.tcp != nil {
+// Close the open connection.
+// The error returned is an os.Error to satisfy io.Closer;
+func (this *Client) Close() (err os.Error) {
+	if this.conn != nil {
 		this.send("close")
 
 		this.reader = nil
 		this.writer = nil
 
-		this.tcp.Close()
-		this.tcp = nil
+		err = this.conn.Close()
+		this.conn = nil
 	}
+
+	return
 }
 
 func (this *Client) parseError(line string) os.Error {
@@ -100,43 +99,18 @@ func (this *Client) parseError(line string) os.Error {
 	return os.NewError(line)
 }
 
-func (this *Client) requestArgs(cmd string, arg ...interface{}) (args Args, err os.Error) {
+func (this *Client) request(cmd string, arg ...interface{}) (args Args, err os.Error) {
 	if err = this.send(fmt.Sprintf(cmd, arg...)); err != nil {
 		return
 	}
 	return this.receive()
 }
 
-func (this *Client) request(cmd string, arg ...interface{}) (err os.Error) {
-	var args Args
-	if args, err = this.requestArgs(fmt.Sprintf(cmd, arg...)); err != nil {
-		return
-	}
-	args.Print()
-	return
-}
-
-func (this *Client) requestListArgs(cmd string, arg ...interface{}) (args []Args, err os.Error) {
+func (this *Client) requestList(cmd string, arg ...interface{}) (args []Args, err os.Error) {
 	if err = this.send(fmt.Sprintf(cmd, arg...)); err != nil {
 		return
 	}
 	return this.receiveList()
-}
-
-func (this *Client) requestList(cmd string, arg ...interface{}) (err os.Error) {
-	if err = this.send(fmt.Sprintf(cmd, arg...)); err != nil {
-		return
-	}
-
-	var arglist []Args
-	if arglist, err = this.receiveList(); err != nil || arglist == nil {
-		return
-	}
-
-	for _, v := range arglist {
-		v.Print()
-	}
-	return
 }
 
 func (this *Client) receive() (data Args, err os.Error) {
@@ -241,6 +215,47 @@ func (this *Client) send(msg string, args ...interface{}) (err os.Error) {
 
 	return
 }
+
+// The following methods are here to ensure mpd.Client implements the net.Conn
+// interface. They are not necessarily useful for this particular connection,
+// but the calls will be passed to the underlying connection.
+
+
+// Read reads data from the connection.
+// Read can be made to time out and return a net.Error with Timeout() == true
+// after a fixed time limit; see SetTimeout and SetReadTimeout.
+func (this *Client) Read(b []byte) (n int, err os.Error) {
+	return this.conn.Read(b)
+}
+
+// Write writes data to the connection.
+// Write can be made to time out and return a net.Error with Timeout() == true
+// after a fixed time limit; see SetTimeout and SetWriteTimeout.
+func (this *Client) Write(b []byte) (n int, err os.Error) {
+	return this.conn.Write(b)
+}
+
+// LocalAddr returns the local network address.
+func (this *Client) LocalAddr() net.Addr { return this.conn.LocalAddr() }
+
+// RemoteAddr returns the remote network address.
+func (this *Client) RemoteAddr() net.Addr { return this.conn.RemoteAddr() }
+
+// SetTimeout sets the read and write deadlines associated
+// with the connection.
+func (this *Client) SetTimeout(nsec int64) os.Error { return this.conn.SetTimeout(nsec) }
+
+// SetReadTimeout sets the time (in nanoseconds) that
+// Read will wait for data before returning an error with Timeout() == true.
+// Setting nsec == 0 (the default) disables the deadline.
+func (this *Client) SetReadTimeout(nsec int64) os.Error { return this.conn.SetReadTimeout(nsec) }
+
+// SetWriteTimeout sets the time (in nanoseconds) that
+// Write will wait to send its data before returning an error with Timeout() == true.
+// Setting nsec == 0 (the default) disables the deadline.
+// Even if write times out, it may return n > 0, indicating that
+// some of the data was successfully written.
+func (this *Client) SetWriteTimeout(nsec int64) os.Error { return this.conn.SetWriteTimeout(nsec) }
 
 func isSupportedVersion(ver string) bool {
 	var reg_version *regexp.Regexp

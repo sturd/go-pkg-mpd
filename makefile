@@ -5,8 +5,6 @@
 include $(GOROOT)/src/Make.inc
 
 TARG = github.com/jteeuwen/go-pkg-mpd
-GOFILES = config.go patterns.go command.go param.go api_admin.go api_info.go \
-	api_database.go api_playlist.go api_playback.go client.go args.go http.go \
-	misc.go
+GOFILES = client.go args.go api_*.go song.go status.go stats.go output.go
 
 include $(GOROOT)/src/Make.pkg

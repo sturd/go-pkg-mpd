@@ -4,49 +4,46 @@
 
 package mpd
 
-import (
-	"os"
-	"fmt"
-	"strconv"
-)
+import "strconv"
 
 type Args map[string]string
 
-func (this Args) Bool(k string, d bool) bool {
-	r := 0
-	if d {
-		r = 1
-	}
-	return this.Int(k, r) == 1
-}
+func (this Args) B(k string) bool  { return this.I(k) == 1 }
+func (this Args) U8(k string) byte { return byte(this.I(k)) }
 
-func (this Args) Byte(k string, d byte) byte {
-	return byte(this.Int(k, int(d)))
-}
-
-func (this Args) Int(k string, d int) int {
+func (this Args) I(k string) int {
 	if v, e := strconv.Atoi(this.read(k)); e == nil {
 		return v
 	}
-	return d
+	return 0
 }
 
-func (this Args) Int32(k string, d int32) int32 {
-	return int32(this.Int(k, int(d)))
+func (this Args) F32(k string) float32 {
+	if v, e := strconv.Atof64(this.read(k)); e == nil {
+		return float32(v)
+	}
+	return 0
 }
 
-func (this Args) Int64(k string, d int64) int64 {
+func (this Args) F64(k string) float64 {
+	if v, e := strconv.Atof64(this.read(k)); e == nil {
+		return v
+	}
+	return 0
+}
+
+func (this Args) I64(k string) int64 {
 	if v, e := strconv.Atoi64(this.read(k)); e == nil {
 		return v
 	}
-	return d
+	return 0
 }
 
-func (this Args) String(k, d string) string {
+func (this Args) S(k string) string {
 	if v := this.read(k); v != "" {
 		return v
 	}
-	return d
+	return ""
 }
 
 func (this Args) read(key string) string {
@@ -55,10 +52,4 @@ func (this Args) read(key string) string {
 		return ""
 	}
 	return v
-}
-
-func (this Args) Print() {
-	for k, v := range this {
-		fmt.Fprintf(os.Stdout, "%v : %v\n", k, v)
-	}
 }
