@@ -98,11 +98,3 @@
 
  goinstall github.com/jteeuwen/go-pkg-mpd
 
-================================================================================
- LICENSE
-================================================================================
-
-All code is subject to a 1-clause BSD license. See the LICENSE file for its
-contents.
-
-
