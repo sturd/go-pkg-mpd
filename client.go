@@ -30,7 +30,7 @@ type Client struct {
 func Dial(address, password string) (c *Client, err os.Error) {
 	c = new(Client)
 
-	if c.conn, err = net.Dial("tcp", "", address); err != nil {
+	if c.conn, err = net.Dial("tcp", address); err != nil {
 		return
 	}
 
