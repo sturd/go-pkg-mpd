@@ -75,7 +75,7 @@ func splitI(v string, delim string) []int {
 	var list []int
 	var el []string
 
-	if el = strings.Split(v, delim, -1); len(el) == 0 {
+	if el = strings.Split(v, delim); len(el) == 0 {
 		return nil
 	}
 
