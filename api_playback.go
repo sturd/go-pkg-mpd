@@ -4,10 +4,8 @@
 
 package mpd
 
-import "os"
-
 // Toggles between play/pause.
-func (this *Client) Toggle() (err os.Error) {
+func (this *Client) Toggle() (err error) {
 	var arg Args
 	if arg, err = this.request("status"); err != nil {
 		return
@@ -23,14 +21,14 @@ func (this *Client) Toggle() (err os.Error) {
 
 // Sets crossfading (mixing) between songs.
 // @time: Crossfade time in seconds.
-func (this *Client) Crossfade(time int) (err os.Error) {
+func (this *Client) Crossfade(time int) (err error) {
 	_, err = this.request("crossfade %d", time)
 	return
 }
 
 // Toggle pause on/off.
 // @toggle: Specifies whether to pause or resume playback.
-func (this *Client) Pause(toggle bool) (err os.Error) {
+func (this *Client) Pause(toggle bool) (err error) {
 	v := 0
 	if toggle {
 		v = 1
@@ -41,33 +39,33 @@ func (this *Client) Pause(toggle bool) (err os.Error) {
 
 // Play the song at the specified position.
 // @pos: Position of song to play.
-func (this *Client) Play(pos int) (err os.Error) {
+func (this *Client) Play(pos int) (err error) {
 	_, err = this.request("play %d", pos)
 	return
 }
 
 // Play the song with the specified id.
 // @id: Id of the song to play.
-func (this *Client) PlayId(id int) (err os.Error) {
+func (this *Client) PlayId(id int) (err error) {
 	_, err = this.request("playid %d", id)
 	return
 }
 
 // Skip to previous song.
-func (this *Client) Previous() (err os.Error) {
+func (this *Client) Previous() (err error) {
 	_, err = this.request("previous")
 	return
 }
 
 // Skip to next song.
-func (this *Client) Next() (err os.Error) {
+func (this *Client) Next() (err error) {
 	_, err = this.request("next")
 	return
 }
 
 // Toggle random mode on/of
 // @toggle: Specifies whether to used random or normal playback.
-func (this *Client) Random(toggle bool) (err os.Error) {
+func (this *Client) Random(toggle bool) (err error) {
 	v := 0
 	if toggle {
 		v = 1
@@ -78,7 +76,7 @@ func (this *Client) Random(toggle bool) (err os.Error) {
 
 // Toggle repeat mode on/off.
 // @toggle: Specifies whether to ise repeat or not.
-func (this *Client) Repeat(toggle bool) (err os.Error) {
+func (this *Client) Repeat(toggle bool) (err error) {
 	v := 0
 	if toggle {
 		v = 1
@@ -90,7 +88,7 @@ func (this *Client) Repeat(toggle bool) (err os.Error) {
 // Skip to specific point in time in song at position @pos.
 // @pos: Position of song.
 // @time: Time in seconds to jump to.
-func (this *Client) Seek(pos, time int) (err os.Error) {
+func (this *Client) Seek(pos, time int) (err error) {
 	_, err = this.request("seek %d %d", pos, time)
 	return
 }
@@ -98,7 +96,7 @@ func (this *Client) Seek(pos, time int) (err os.Error) {
 // Skip to specific point in time in song at position @pos.
 // @pos: Id of song.
 // @time: Time in seconds to jump to.
-func (this *Client) SeekId(id, time int) (err os.Error) {
+func (this *Client) SeekId(id, time int) (err error) {
 	_, err = this.request("seekid %d %d", id, time)
 	return
 }
@@ -108,7 +106,7 @@ func (this *Client) SeekId(id, time int) (err os.Error) {
 // @vol: New volume value in range 0-100.
 // @relative: Indicates if our value is an absolute volume, or relative
 // adjustment from the current volume.
-func (this *Client) Volume(vol byte, relative bool) (err os.Error) {
+func (this *Client) Volume(vol byte, relative bool) (err error) {
 	if relative {
 		var a Args
 
@@ -132,7 +130,7 @@ func (this *Client) Volume(vol byte, relative bool) (err os.Error) {
 }
 
 // Stop playback.
-func (this *Client) Stop() (err os.Error) {
+func (this *Client) Stop() (err error) {
 	_, err = this.request("stop")
 	return
 }

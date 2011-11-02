@@ -4,16 +4,13 @@
 
 package mpd
 
-import (
-	"fmt"
-	"os"
-)
+import "fmt"
 
 // Add a single file from the database to the playlist. This command increments
 // the playlist version by 1 for each song added to the playlist.
 // @path: A single directory or file. If this is a directory, all files in it
 // are added recursively.
-func (this *Client) Add(path string) (err os.Error) {
+func (this *Client) Add(path string) (err error) {
 	_, err = this.request("add \"%s\"", path)
 	return
 }
@@ -24,7 +21,7 @@ func (this *Client) Add(path string) (err os.Error) {
 // are added recursively.
 // @pos: The location at which to insert the file(s) into the playlist. Pass
 // -1 to insert at the end of the list.
-func (this *Client) AddId(path string, pos int) (err os.Error) {
+func (this *Client) AddId(path string, pos int) (err error) {
 	if pos > -1 {
 		_, err = this.request("addid \"%s\" %d", path, pos)
 	} else {
@@ -34,26 +31,26 @@ func (this *Client) AddId(path string, pos int) (err os.Error) {
 }
 
 // Clears the current playlist. Increments the playlist version by 1.
-func (this *Client) Clear() (err os.Error) {
+func (this *Client) Clear() (err error) {
 	_, err = this.request("clear")
 	return
 }
 
 // Reports the metadata of the currently playing song.
-func (this *Client) Current() (Args, os.Error) {
+func (this *Client) Current() (Args, error) {
 	return this.request("currentsong")
 }
 
 // Deletes the specified song from the playlist. increments the playlist version by 1.
 // @pos: Position of the song in the playlist.
-func (this *Client) Delete(pos int) (err os.Error) {
+func (this *Client) Delete(pos int) (err error) {
 	_, err = this.request("delete %d", pos)
 	return
 }
 
 // Deletes the specified song from the playlist. increments the playlist version by 1.
 // @pos: Id of the song to delete.
-func (this *Client) DeleteId(id int) (err os.Error) {
+func (this *Client) DeleteId(id int) (err error) {
 	_, err = this.request("deleteid %d", id)
 	return
 }
@@ -62,7 +59,7 @@ func (this *Client) DeleteId(id int) (err os.Error) {
 // version by the number of songs added.
 // @name: Name of the playlist file *without* the path and file extension.
 // eg: '/path/to/all.m3u' -> 'all'.
-func (this *Client) Load(name string) (err os.Error) {
+func (this *Client) Load(name string) (err error) {
 	_, err = this.request("load \"%s\"", name)
 	return
 }
@@ -71,7 +68,7 @@ func (this *Client) Load(name string) (err os.Error) {
 // *without* the path and file extension. eg: '/path/to/all.m3u' -> 'all'.
 // @oldname: Current name of the playlist.
 // @newname: New name of the playlist.
-func (this *Client) Rename(oldname, newname string) (err os.Error) {
+func (this *Client) Rename(oldname, newname string) (err error) {
 	_, err = this.request("rename \"%s\" \"%s\"", oldname, newname)
 	return
 }
@@ -79,7 +76,7 @@ func (this *Client) Rename(oldname, newname string) (err os.Error) {
 // Moves a song with id @src to position @dest.
 // @src: Source position.
 // @dst: Target position.
-func (this *Client) Move(src, dst int) (err os.Error) {
+func (this *Client) Move(src, dst int) (err error) {
 	_, err = this.request("move %d %d", src, dst)
 	return
 }
@@ -87,7 +84,7 @@ func (this *Client) Move(src, dst int) (err os.Error) {
 // Moves a song with id position @src to position @dest.
 // @src: Id of source song.
 // @dst: Target position.
-func (this *Client) MoveId(src, dst int) (err os.Error) {
+func (this *Client) MoveId(src, dst int) (err error) {
 	_, err = this.request("moveid %d %d", src, dst)
 	return
 }
@@ -95,7 +92,7 @@ func (this *Client) MoveId(src, dst int) (err os.Error) {
 // Reports metadata for songs in the playlist.
 // @pos: An optional number that specifies a single song to display information
 // for. Specify -1 to report for all songs.
-func (this *Client) PlaylistInfo(pos int) (list []*Song, err os.Error) {
+func (this *Client) PlaylistInfo(pos int) (list []*Song, err error) {
 	var a []Args
 	var str string
 
@@ -119,7 +116,7 @@ func (this *Client) PlaylistInfo(pos int) (list []*Song, err os.Error) {
 
 // Reports changed songs in the playlist since @version.
 // @version: The playlist version to display changed songs for.
-func (this *Client) PlaylistChanges(version int) (list []*Song, err os.Error) {
+func (this *Client) PlaylistChanges(version int) (list []*Song, err error) {
 	var a []Args
 
 	if a, err = this.requestList("plchanges %d", version); err != nil {
@@ -137,7 +134,7 @@ func (this *Client) PlaylistChanges(version int) (list []*Song, err os.Error) {
 // Removes the playlist called @name from the playlist directory.
 // @name: Name of the playlist file *without* the path and file extension.
 // eg: '/path/to/all.m3u' -> 'all'.
-func (this *Client) PlaylistRm(name string) (err os.Error) {
+func (this *Client) PlaylistRm(name string) (err error) {
 	_, err = this.request("rm \"%s\"", name)
 	return
 }
@@ -145,13 +142,13 @@ func (this *Client) PlaylistRm(name string) (err os.Error) {
 // Saves the current playlist to @name in the playlist directory.
 // @name: Name of the playlist file *without* the path and file extension.
 // eg: '/path/to/all.m3u' -> 'all'.
-func (this *Client) Save(name string) (err os.Error) {
+func (this *Client) Save(name string) (err error) {
 	_, err = this.request("save \"%s\"", name)
 	return
 }
 
 // Shuffles the current playlist, increments playlist version by 1.
-func (this *Client) Shuffle() (err os.Error) {
+func (this *Client) Shuffle() (err error) {
 	_, err = this.request("shuffle")
 	return
 }
@@ -159,7 +156,7 @@ func (this *Client) Shuffle() (err os.Error) {
 // Swap positions of songs at positions @pos1 and @pos2. Increments playlist version by 1.
 // @src: Source position.
 // @dst: Target position.
-func (this *Client) Swap(src, dst int) (err os.Error) {
+func (this *Client) Swap(src, dst int) (err error) {
 	_, err = this.request("swap %d %d", src, dst)
 	return
 }
@@ -167,7 +164,7 @@ func (this *Client) Swap(src, dst int) (err os.Error) {
 // Swap positions of songs with the specified IDs. Increments playlist version by 1.
 // @src: Source ID.
 // @dst: Target ID.
-func (this *Client) SwapId(src, dst int) (err os.Error) {
+func (this *Client) SwapId(src, dst int) (err error) {
 	_, err = this.request("swapid %d %d", src, dst)
 	return
 }
@@ -175,7 +172,7 @@ func (this *Client) SwapId(src, dst int) (err os.Error) {
 // Reports files in playlist named @name.
 // @name: Name of the playlist file *without* the path and file extension.
 // eg: '/path/to/all.m3u' -> 'all'.
-func (this *Client) ListPlaylistFiles(name string) (v []string, err os.Error) {
+func (this *Client) ListPlaylistFiles(name string) (v []string, err error) {
 	var a []Args
 	if a, err = this.requestList("listplaylist \"%s\"", name); err != nil {
 		return
@@ -194,7 +191,7 @@ func (this *Client) ListPlaylistFiles(name string) (v []string, err os.Error) {
 // Reports songs in playlist named @name.
 // @name: Name of the playlist file *without* the path and file extension.
 // eg: '/path/to/all.m3u' -> 'all'.
-func (this *Client) ListPlaylistSongs(name string) (list []*Song, err os.Error) {
+func (this *Client) ListPlaylistSongs(name string) (list []*Song, err error) {
 	var a []Args
 
 	if a, err = this.requestList("listplaylistinfo \"%s\"", name); err != nil {
@@ -213,7 +210,7 @@ func (this *Client) ListPlaylistSongs(name string) (list []*Song, err os.Error) 
 // @name: Name of the playlist file *without* the path and file extension.
 // eg: '/path/to/all.m3u' -> 'all'.
 // @path: Path of file(s) to add to the given playlist.
-func (this *Client) PlaylistAdd(name, path string) (err os.Error) {
+func (this *Client) PlaylistAdd(name, path string) (err error) {
 	_, err = this.request("playlistadd \"%s\" \"%s\"", name, path)
 	return
 }
@@ -221,7 +218,7 @@ func (this *Client) PlaylistAdd(name, path string) (err os.Error) {
 // Clear playlist with given @name.
 // @name: Name of the playlist file *without* the path and file extension.
 // eg: '/path/to/all.m3u' -> 'all'.
-func (this *Client) PlaylistClear(name string) (err os.Error) {
+func (this *Client) PlaylistClear(name string) (err error) {
 	_, err = this.request("playlistclear \"%s\"", name)
 	return
 }
@@ -230,7 +227,7 @@ func (this *Client) PlaylistClear(name string) (err os.Error) {
 // @name: Name of the playlist file *without* the path and file extension.
 // eg: '/path/to/all.m3u' -> 'all'.
 // @id: ID of song to delete.
-func (this *Client) PlaylistDelete(name string, id int) (err os.Error) {
+func (this *Client) PlaylistDelete(name string, id int) (err error) {
 	_, err = this.request("playlistdelete \"%s\" %d", name, id)
 	return
 }
@@ -240,7 +237,7 @@ func (this *Client) PlaylistDelete(name string, id int) (err os.Error) {
 // eg: '/path/to/all.m3u' -> 'all'.
 // @id: ID of song to move.
 // @pos: Position to move song to.
-func (this *Client) PlaylistMove(name string, id, pos int) (err os.Error) {
+func (this *Client) PlaylistMove(name string, id, pos int) (err error) {
 	_, err = this.request("playlistmove \"%s\" %d %d", name, id, pos)
 	return
 }
@@ -248,7 +245,7 @@ func (this *Client) PlaylistMove(name string, id, pos int) (err os.Error) {
 // Case-insensitive playlist search.
 // @tag: Tag to search in.
 // @term: Term to search for in @tag.
-func (this *Client) PlaylistSearch(tag, term string) (list []*Song, err os.Error) {
+func (this *Client) PlaylistSearch(tag, term string) (list []*Song, err error) {
 	var a []Args
 
 	if a, err = this.requestList("playlistsearch \"%s\" \"%s\"", tag, term); err != nil {

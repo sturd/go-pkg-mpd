@@ -4,11 +4,9 @@
 
 package mpd
 
-import "os"
-
 // Reports the current status of MPD, as well as the current settings of some
 // playback options.
-func (this *Client) Status() (s *Status, err os.Error) {
+func (this *Client) Status() (s *Status, err error) {
 	var a Args
 
 	if a, err = this.request("status"); err != nil {
@@ -20,7 +18,7 @@ func (this *Client) Status() (s *Status, err os.Error) {
 }
 
 // Reports database and playlist statistics.
-func (this *Client) Stats() (s *Stats, err os.Error) {
+func (this *Client) Stats() (s *Stats, err error) {
 	var a Args
 
 	if a, err = this.request("stats"); err != nil {
@@ -32,7 +30,7 @@ func (this *Client) Stats() (s *Stats, err os.Error) {
 }
 
 // Reports information about all known audio output devices.
-func (this *Client) Outputs() (list []*Output, err os.Error) {
+func (this *Client) Outputs() (list []*Output, err error) {
 	var a []Args
 
 	if a, err = this.requestList("outputs"); err != nil {
@@ -49,7 +47,7 @@ func (this *Client) Outputs() (list []*Output, err os.Error) {
 }
 
 // Reports which commands the current user has access to.
-func (this *Client) Commands() (v []string, err os.Error) {
+func (this *Client) Commands() (v []string, err error) {
 	var a []Args
 	if a, err = this.requestList("commands"); err != nil {
 		return
@@ -66,7 +64,7 @@ func (this *Client) Commands() (v []string, err os.Error) {
 }
 
 // Reports which commands the current user has *no* access to.
-func (this *Client) NotCommands() (v []string, err os.Error) {
+func (this *Client) NotCommands() (v []string, err error) {
 	var a []Args
 	if a, err = this.requestList("notcommands"); err != nil {
 		return
@@ -83,7 +81,7 @@ func (this *Client) NotCommands() (v []string, err os.Error) {
 }
 
 // Reports a list of available song metadata fields.
-func (this *Client) TagTypes() (v []string, err os.Error) {
+func (this *Client) TagTypes() (v []string, err error) {
 	var a []Args
 	if a, err = this.requestList("tagtypes"); err != nil {
 		return
@@ -100,7 +98,7 @@ func (this *Client) TagTypes() (v []string, err os.Error) {
 }
 
 // Reports a list of available URL handlers.
-func (this *Client) UrlHandlers() (v []string, err os.Error) {
+func (this *Client) UrlHandlers() (v []string, err error) {
 	var a []Args
 	if a, err = this.requestList("urlhandlers"); err != nil {
 		return

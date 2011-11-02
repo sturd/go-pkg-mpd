@@ -5,7 +5,7 @@
 package mpd
 
 import (
-	"os"
+	"errors"
 	"time"
 	"regexp"
 	"fmt"
@@ -27,7 +27,7 @@ type Client struct {
 
 // This Opens a new connection to the specified MPD server and optionally
 // logs in with the given password.
-func Dial(address, password string) (c *Client, err os.Error) {
+func Dial(address, password string) (c *Client, err error) {
 	c = new(Client)
 
 	if c.conn, err = net.Dial("tcp", address); err != nil {
@@ -48,18 +48,18 @@ func Dial(address, password string) (c *Client, err os.Error) {
 
 	if data = strings.TrimSpace(data); len(data) == 0 {
 		c.Close()
-		return nil, os.NewError("No valid handshake received.")
+		return nil, errors.New("No valid handshake received.")
 	}
 
 	if data[0:3] == "ACK" {
 		c.Close()
-		return nil, os.NewError(fmt.Sprintf("Handshake error: %s", data[4:]))
+		return nil, errors.New(fmt.Sprintf("Handshake error: %s", data[4:]))
 	}
 
 	c.ProtocolVersion = data[3:]
 	if !isSupportedVersion(c.ProtocolVersion) {
 		c.Close()
-		return nil, os.NewError(fmt.Sprintf(
+		return nil, errors.New(fmt.Sprintf(
 			"Invalid protocol version. This library requires at least 'MPD %d.%d.%d'. Server sent '%s'.",
 			SupportedVersion[0], SupportedVersion[1], SupportedVersion[2],
 			c.ProtocolVersion,
@@ -75,7 +75,7 @@ func Dial(address, password string) (c *Client, err os.Error) {
 
 // Close the open connection.
 // The error returned is an os.Error to satisfy io.Closer;
-func (this *Client) Close() (err os.Error) {
+func (this *Client) Close() (err error) {
 	if this.conn != nil {
 		this.send("close")
 
@@ -89,33 +89,33 @@ func (this *Client) Close() (err os.Error) {
 	return
 }
 
-func (this *Client) parseError(line string) os.Error {
+func (this *Client) parseError(line string) error {
 	if strings.HasPrefix(line, "ACK ") {
 		// sig: [errcode@token] {command} message
 		//  ex: [2@0] {enableoutput} wrong number of arguments for "enableoutput"
 		pos := strings.Index(line, "}")
-		return os.NewError(strings.TrimSpace(line[pos+1:]))
+		return errors.New(strings.TrimSpace(line[pos+1:]))
 	}
-	return os.NewError(line)
+	return errors.New(line)
 }
 
-func (this *Client) request(cmd string, arg ...interface{}) (args Args, err os.Error) {
+func (this *Client) request(cmd string, arg ...interface{}) (args Args, err error) {
 	if err = this.send(fmt.Sprintf(cmd, arg...)); err != nil {
 		return
 	}
 	return this.receive()
 }
 
-func (this *Client) requestList(cmd string, arg ...interface{}) (args []Args, err os.Error) {
+func (this *Client) requestList(cmd string, arg ...interface{}) (args []Args, err error) {
 	if err = this.send(fmt.Sprintf(cmd, arg...)); err != nil {
 		return
 	}
 	return this.receiveList()
 }
 
-func (this *Client) receive() (data Args, err os.Error) {
+func (this *Client) receive() (data Args, err error) {
 	if this.reader == nil {
-		return nil, os.NewError("Stream reader is closed.")
+		return nil, errors.New("Stream reader is closed.")
 	}
 
 	data = make(Args)
@@ -146,12 +146,12 @@ func (this *Client) receive() (data Args, err os.Error) {
 	return
 }
 
-func (this *Client) receiveList() (data []Args, err os.Error) {
+func (this *Client) receiveList() (data []Args, err error) {
 	var line string
 	var pos int
 
 	if this.reader == nil {
-		return nil, os.NewError("Stream reader is closed.")
+		return nil, errors.New("Stream reader is closed.")
 	}
 
 	a := make(Args)
@@ -193,12 +193,12 @@ func (this *Client) receiveList() (data []Args, err os.Error) {
 	return
 }
 
-func (this *Client) send(msg string, args ...interface{}) (err os.Error) {
+func (this *Client) send(msg string, args ...interface{}) (err error) {
 	const max_retries = 3
 	var tries, num int
 
 	if this.writer == nil {
-		return os.NewError("Stream writer is closed.")
+		return errors.New("Stream writer is closed.")
 	}
 
 	msg = fmt.Sprintf(msg, args...)
@@ -220,18 +220,17 @@ func (this *Client) send(msg string, args ...interface{}) (err os.Error) {
 // interface. They are not necessarily useful for this particular connection,
 // but the calls will be passed to the underlying connection.
 
-
 // Read reads data from the connection.
 // Read can be made to time out and return a net.Error with Timeout() == true
 // after a fixed time limit; see SetTimeout and SetReadTimeout.
-func (this *Client) Read(b []byte) (n int, err os.Error) {
+func (this *Client) Read(b []byte) (n int, err error) {
 	return this.conn.Read(b)
 }
 
 // Write writes data to the connection.
 // Write can be made to time out and return a net.Error with Timeout() == true
 // after a fixed time limit; see SetTimeout and SetWriteTimeout.
-func (this *Client) Write(b []byte) (n int, err os.Error) {
+func (this *Client) Write(b []byte) (n int, err error) {
 	return this.conn.Write(b)
 }
 
@@ -243,23 +242,23 @@ func (this *Client) RemoteAddr() net.Addr { return this.conn.RemoteAddr() }
 
 // SetTimeout sets the read and write deadlines associated
 // with the connection.
-func (this *Client) SetTimeout(nsec int64) os.Error { return this.conn.SetTimeout(nsec) }
+func (this *Client) SetTimeout(nsec int64) error { return this.conn.SetTimeout(nsec) }
 
 // SetReadTimeout sets the time (in nanoseconds) that
 // Read will wait for data before returning an error with Timeout() == true.
 // Setting nsec == 0 (the default) disables the deadline.
-func (this *Client) SetReadTimeout(nsec int64) os.Error { return this.conn.SetReadTimeout(nsec) }
+func (this *Client) SetReadTimeout(nsec int64) error { return this.conn.SetReadTimeout(nsec) }
 
 // SetWriteTimeout sets the time (in nanoseconds) that
 // Write will wait to send its data before returning an error with Timeout() == true.
 // Setting nsec == 0 (the default) disables the deadline.
 // Even if write times out, it may return n > 0, indicating that
 // some of the data was successfully written.
-func (this *Client) SetWriteTimeout(nsec int64) os.Error { return this.conn.SetWriteTimeout(nsec) }
+func (this *Client) SetWriteTimeout(nsec int64) error { return this.conn.SetWriteTimeout(nsec) }
 
 func isSupportedVersion(ver string) bool {
 	var reg_version *regexp.Regexp
-	var err os.Error
+	var err error
 
 	if reg_version, err = regexp.Compile(`^MPD ([0-9]+).([0-9]+).([0-9]+)$`); err != nil {
 		return false
