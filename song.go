@@ -6,14 +6,14 @@ package mpd
 
 type Song struct {
 	File         string
-	Id           int
-	Pos          int
 	Artist       string
 	Album        string
 	Title        string
+	LastModified int64
+	Id           int
+	Pos          int
 	Track        int
 	Time         int
-	LastModified int64
 }
 
 func readSong(a Args) *Song {

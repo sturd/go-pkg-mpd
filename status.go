@@ -5,8 +5,8 @@
 package mpd
 
 import (
-	"strings"
 	"strconv"
+	"strings"
 )
 
 type PlayState uint8

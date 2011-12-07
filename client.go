@@ -5,14 +5,14 @@
 package mpd
 
 import (
-	"errors"
-	"time"
-	"regexp"
-	"fmt"
-	"strings"
-	"strconv"
 	"bufio"
+	"errors"
+	"fmt"
 	"net"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
 )
 
 // Used to test whether we are compatible with the MPD server.
