@@ -19,21 +19,21 @@ func (this Args) I(k string) int {
 }
 
 func (this Args) F32(k string) float32 {
-	if v, e := strconv.Atof64(this.read(k)); e == nil {
+	if v, e := strconv.ParseFloat(this.read(k), 64); e == nil {
 		return float32(v)
 	}
 	return 0
 }
 
 func (this Args) F64(k string) float64 {
-	if v, e := strconv.Atof64(this.read(k)); e == nil {
+	if v, e := strconv.ParseFloat(this.read(k), 64); e == nil {
 		return v
 	}
 	return 0
 }
 
 func (this Args) I64(k string) int64 {
-	if v, e := strconv.Atoi64(this.read(k)); e == nil {
+	if v, e := strconv.ParseInt(this.read(k), 10, 64); e == nil {
 		return v
 	}
 	return 0
