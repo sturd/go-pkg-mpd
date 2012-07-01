@@ -8,50 +8,50 @@ import "fmt"
 
 // Add a single file from the database to the playlist. This command increments
 // the playlist version by 1 for each song added to the playlist.
-// @path: A single directory or file. If this is a directory, all files in it
+// @path: A single directory or file. If c is a directory, all files in it
 // are added recursively.
-func (this *Client) Add(path string) (err error) {
-	_, err = this.request("add \"%s\"", path)
+func (c *Client) Add(path string) (err error) {
+	_, err = c.request("add \"%s\"", path)
 	return
 }
 
-// Same as 'add', but this returns a playlistid and allows specifying a position
+// Same as 'add', but c returns a playlistid and allows specifying a position
 // at which to insert the file(s).
-// @path: A single directory or file. If this is a directory, all files in it
+// @path: A single directory or file. If c is a directory, all files in it
 // are added recursively.
 // @pos: The location at which to insert the file(s) into the playlist. Pass
 // -1 to insert at the end of the list.
-func (this *Client) AddId(path string, pos int) (err error) {
+func (c *Client) AddId(path string, pos int) (err error) {
 	if pos > -1 {
-		_, err = this.request("addid \"%s\" %d", path, pos)
+		_, err = c.request("addid \"%s\" %d", path, pos)
 	} else {
-		_, err = this.request("addid \"%s\"", path)
+		_, err = c.request("addid \"%s\"", path)
 	}
 	return
 }
 
 // Clears the current playlist. Increments the playlist version by 1.
-func (this *Client) Clear() (err error) {
-	_, err = this.request("clear")
+func (c *Client) Clear() (err error) {
+	_, err = c.request("clear")
 	return
 }
 
 // Reports the metadata of the currently playing song.
-func (this *Client) Current() (Args, error) {
-	return this.request("currentsong")
+func (c *Client) Current() (Args, error) {
+	return c.request("currentsong")
 }
 
 // Deletes the specified song from the playlist. increments the playlist version by 1.
 // @pos: Position of the song in the playlist.
-func (this *Client) Delete(pos int) (err error) {
-	_, err = this.request("delete %d", pos)
+func (c *Client) Delete(pos int) (err error) {
+	_, err = c.request("delete %d", pos)
 	return
 }
 
 // Deletes the specified song from the playlist. increments the playlist version by 1.
 // @pos: Id of the song to delete.
-func (this *Client) DeleteId(id int) (err error) {
-	_, err = this.request("deleteid %d", id)
+func (c *Client) DeleteId(id int) (err error) {
+	_, err = c.request("deleteid %d", id)
 	return
 }
 
@@ -59,8 +59,8 @@ func (this *Client) DeleteId(id int) (err error) {
 // version by the number of songs added.
 // @name: Name of the playlist file *without* the path and file extension.
 // eg: '/path/to/all.m3u' -> 'all'.
-func (this *Client) Load(name string) (err error) {
-	_, err = this.request("load \"%s\"", name)
+func (c *Client) Load(name string) (err error) {
+	_, err = c.request("load \"%s\"", name)
 	return
 }
 
@@ -68,31 +68,31 @@ func (this *Client) Load(name string) (err error) {
 // *without* the path and file extension. eg: '/path/to/all.m3u' -> 'all'.
 // @oldname: Current name of the playlist.
 // @newname: New name of the playlist.
-func (this *Client) Rename(oldname, newname string) (err error) {
-	_, err = this.request("rename \"%s\" \"%s\"", oldname, newname)
+func (c *Client) Rename(oldname, newname string) (err error) {
+	_, err = c.request("rename \"%s\" \"%s\"", oldname, newname)
 	return
 }
 
 // Moves a song with id @src to position @dest.
 // @src: Source position.
 // @dst: Target position.
-func (this *Client) Move(src, dst int) (err error) {
-	_, err = this.request("move %d %d", src, dst)
+func (c *Client) Move(src, dst int) (err error) {
+	_, err = c.request("move %d %d", src, dst)
 	return
 }
 
 // Moves a song with id position @src to position @dest.
 // @src: Id of source song.
 // @dst: Target position.
-func (this *Client) MoveId(src, dst int) (err error) {
-	_, err = this.request("moveid %d %d", src, dst)
+func (c *Client) MoveId(src, dst int) (err error) {
+	_, err = c.request("moveid %d %d", src, dst)
 	return
 }
 
 // Reports metadata for songs in the playlist.
 // @pos: An optional number that specifies a single song to display information
 // for. Specify -1 to report for all songs.
-func (this *Client) PlaylistInfo(pos int) (list []*Song, err error) {
+func (c *Client) PlaylistInfo(pos int) (list []*Song, err error) {
 	var a []Args
 	var str string
 
@@ -102,7 +102,7 @@ func (this *Client) PlaylistInfo(pos int) (list []*Song, err error) {
 		str = fmt.Sprintf("playlistinfo %d", pos)
 	}
 
-	if a, err = this.requestList(str); err != nil {
+	if a, err = c.requestList(str); err != nil {
 		return
 	}
 
@@ -116,10 +116,10 @@ func (this *Client) PlaylistInfo(pos int) (list []*Song, err error) {
 
 // Reports changed songs in the playlist since @version.
 // @version: The playlist version to display changed songs for.
-func (this *Client) PlaylistChanges(version int) (list []*Song, err error) {
+func (c *Client) PlaylistChanges(version int) (list []*Song, err error) {
 	var a []Args
 
-	if a, err = this.requestList("plchanges %d", version); err != nil {
+	if a, err = c.requestList("plchanges %d", version); err != nil {
 		return
 	}
 
@@ -134,47 +134,47 @@ func (this *Client) PlaylistChanges(version int) (list []*Song, err error) {
 // Removes the playlist called @name from the playlist directory.
 // @name: Name of the playlist file *without* the path and file extension.
 // eg: '/path/to/all.m3u' -> 'all'.
-func (this *Client) PlaylistRm(name string) (err error) {
-	_, err = this.request("rm \"%s\"", name)
+func (c *Client) PlaylistRm(name string) (err error) {
+	_, err = c.request("rm \"%s\"", name)
 	return
 }
 
 // Saves the current playlist to @name in the playlist directory.
 // @name: Name of the playlist file *without* the path and file extension.
 // eg: '/path/to/all.m3u' -> 'all'.
-func (this *Client) Save(name string) (err error) {
-	_, err = this.request("save \"%s\"", name)
+func (c *Client) Save(name string) (err error) {
+	_, err = c.request("save \"%s\"", name)
 	return
 }
 
 // Shuffles the current playlist, increments playlist version by 1.
-func (this *Client) Shuffle() (err error) {
-	_, err = this.request("shuffle")
+func (c *Client) Shuffle() (err error) {
+	_, err = c.request("shuffle")
 	return
 }
 
 // Swap positions of songs at positions @pos1 and @pos2. Increments playlist version by 1.
 // @src: Source position.
 // @dst: Target position.
-func (this *Client) Swap(src, dst int) (err error) {
-	_, err = this.request("swap %d %d", src, dst)
+func (c *Client) Swap(src, dst int) (err error) {
+	_, err = c.request("swap %d %d", src, dst)
 	return
 }
 
 // Swap positions of songs with the specified IDs. Increments playlist version by 1.
 // @src: Source ID.
 // @dst: Target ID.
-func (this *Client) SwapId(src, dst int) (err error) {
-	_, err = this.request("swapid %d %d", src, dst)
+func (c *Client) SwapId(src, dst int) (err error) {
+	_, err = c.request("swapid %d %d", src, dst)
 	return
 }
 
 // Reports files in playlist named @name.
 // @name: Name of the playlist file *without* the path and file extension.
 // eg: '/path/to/all.m3u' -> 'all'.
-func (this *Client) ListPlaylistFiles(name string) (v []string, err error) {
+func (c *Client) ListPlaylistFiles(name string) (v []string, err error) {
 	var a []Args
-	if a, err = this.requestList("listplaylist \"%s\"", name); err != nil {
+	if a, err = c.requestList("listplaylist \"%s\"", name); err != nil {
 		return
 	}
 
@@ -191,10 +191,10 @@ func (this *Client) ListPlaylistFiles(name string) (v []string, err error) {
 // Reports songs in playlist named @name.
 // @name: Name of the playlist file *without* the path and file extension.
 // eg: '/path/to/all.m3u' -> 'all'.
-func (this *Client) ListPlaylistSongs(name string) (list []*Song, err error) {
+func (c *Client) ListPlaylistSongs(name string) (list []*Song, err error) {
 	var a []Args
 
-	if a, err = this.requestList("listplaylistinfo \"%s\"", name); err != nil {
+	if a, err = c.requestList("listplaylistinfo \"%s\"", name); err != nil {
 		return
 	}
 
@@ -210,16 +210,16 @@ func (this *Client) ListPlaylistSongs(name string) (list []*Song, err error) {
 // @name: Name of the playlist file *without* the path and file extension.
 // eg: '/path/to/all.m3u' -> 'all'.
 // @path: Path of file(s) to add to the given playlist.
-func (this *Client) PlaylistAdd(name, path string) (err error) {
-	_, err = this.request("playlistadd \"%s\" \"%s\"", name, path)
+func (c *Client) PlaylistAdd(name, path string) (err error) {
+	_, err = c.request("playlistadd \"%s\" \"%s\"", name, path)
 	return
 }
 
 // Clear playlist with given @name.
 // @name: Name of the playlist file *without* the path and file extension.
 // eg: '/path/to/all.m3u' -> 'all'.
-func (this *Client) PlaylistClear(name string) (err error) {
-	_, err = this.request("playlistclear \"%s\"", name)
+func (c *Client) PlaylistClear(name string) (err error) {
+	_, err = c.request("playlistclear \"%s\"", name)
 	return
 }
 
@@ -227,8 +227,8 @@ func (this *Client) PlaylistClear(name string) (err error) {
 // @name: Name of the playlist file *without* the path and file extension.
 // eg: '/path/to/all.m3u' -> 'all'.
 // @id: ID of song to delete.
-func (this *Client) PlaylistDelete(name string, id int) (err error) {
-	_, err = this.request("playlistdelete \"%s\" %d", name, id)
+func (c *Client) PlaylistDelete(name string, id int) (err error) {
+	_, err = c.request("playlistdelete \"%s\" %d", name, id)
 	return
 }
 
@@ -237,18 +237,18 @@ func (this *Client) PlaylistDelete(name string, id int) (err error) {
 // eg: '/path/to/all.m3u' -> 'all'.
 // @id: ID of song to move.
 // @pos: Position to move song to.
-func (this *Client) PlaylistMove(name string, id, pos int) (err error) {
-	_, err = this.request("playlistmove \"%s\" %d %d", name, id, pos)
+func (c *Client) PlaylistMove(name string, id, pos int) (err error) {
+	_, err = c.request("playlistmove \"%s\" %d %d", name, id, pos)
 	return
 }
 
 // Case-insensitive playlist search.
 // @tag: Tag to search in.
 // @term: Term to search for in @tag.
-func (this *Client) PlaylistSearch(tag, term string) (list []*Song, err error) {
+func (c *Client) PlaylistSearch(tag, term string) (list []*Song, err error) {
 	var a []Args
 
-	if a, err = this.requestList("playlistsearch \"%s\" \"%s\"", tag, term); err != nil {
+	if a, err = c.requestList("playlistsearch \"%s\" \"%s\"", tag, term); err != nil {
 		return
 	}
 

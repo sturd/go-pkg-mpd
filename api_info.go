@@ -6,10 +6,10 @@ package mpd
 
 // Reports the current status of MPD, as well as the current settings of some
 // playback options.
-func (this *Client) Status() (s *Status, err error) {
+func (c *Client) Status() (s *Status, err error) {
 	var a Args
 
-	if a, err = this.request("status"); err != nil {
+	if a, err = c.request("status"); err != nil {
 		return
 	}
 
@@ -18,10 +18,10 @@ func (this *Client) Status() (s *Status, err error) {
 }
 
 // Reports database and playlist statistics.
-func (this *Client) Stats() (s *Stats, err error) {
+func (c *Client) Stats() (s *Stats, err error) {
 	var a Args
 
-	if a, err = this.request("stats"); err != nil {
+	if a, err = c.request("stats"); err != nil {
 		return
 	}
 
@@ -30,10 +30,10 @@ func (this *Client) Stats() (s *Stats, err error) {
 }
 
 // Reports information about all known audio output devices.
-func (this *Client) Outputs() (list []*Output, err error) {
+func (c *Client) Outputs() (list []*Output, err error) {
 	var a []Args
 
-	if a, err = this.requestList("outputs"); err != nil {
+	if a, err = c.requestList("outputs"); err != nil {
 		return
 	}
 
@@ -47,9 +47,9 @@ func (this *Client) Outputs() (list []*Output, err error) {
 }
 
 // Reports which commands the current user has access to.
-func (this *Client) Commands() (v []string, err error) {
+func (c *Client) Commands() (v []string, err error) {
 	var a []Args
-	if a, err = this.requestList("commands"); err != nil {
+	if a, err = c.requestList("commands"); err != nil {
 		return
 	}
 
@@ -64,9 +64,9 @@ func (this *Client) Commands() (v []string, err error) {
 }
 
 // Reports which commands the current user has *no* access to.
-func (this *Client) NotCommands() (v []string, err error) {
+func (c *Client) NotCommands() (v []string, err error) {
 	var a []Args
-	if a, err = this.requestList("notcommands"); err != nil {
+	if a, err = c.requestList("notcommands"); err != nil {
 		return
 	}
 
@@ -81,9 +81,9 @@ func (this *Client) NotCommands() (v []string, err error) {
 }
 
 // Reports a list of available song metadata fields.
-func (this *Client) TagTypes() (v []string, err error) {
+func (c *Client) TagTypes() (v []string, err error) {
 	var a []Args
-	if a, err = this.requestList("tagtypes"); err != nil {
+	if a, err = c.requestList("tagtypes"); err != nil {
 		return
 	}
 
@@ -98,9 +98,9 @@ func (this *Client) TagTypes() (v []string, err error) {
 }
 
 // Reports a list of available URL handlers.
-func (this *Client) UrlHandlers() (v []string, err error) {
+func (c *Client) UrlHandlers() (v []string, err error) {
 	var a []Args
-	if a, err = this.requestList("urlhandlers"); err != nil {
+	if a, err = c.requestList("urlhandlers"); err != nil {
 		return
 	}
 

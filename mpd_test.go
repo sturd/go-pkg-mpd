@@ -11,23 +11,20 @@ func Test(t *testing.T) {
 	var c *Client
 
 	if c, err = Dial("127.0.0.1:6600", ""); err != nil {
-		t.Error(err.Error())
-		return
+		t.Fatal(err)
 	}
 
 	defer c.Close()
 
 	if status, err := c.Status(); err != nil {
-		t.Error(err.Error())
-		return
+		t.Fatal(err)
 	} else {
 		// do something with our status data.
 		_ = status
 	}
 
 	if songs, err := c.PlaylistSearch("artist", "tool"); err != nil {
-		t.Error(err.Error())
-		return
+		t.Fatal(err)
 	} else {
 		var song *Song
 		for _, song = range songs {

@@ -5,99 +5,99 @@
 package mpd
 
 // Toggles between play/pause.
-func (this *Client) Toggle() (err error) {
+func (c *Client) Toggle() (err error) {
 	var arg Args
-	if arg, err = this.request("status"); err != nil {
+	if arg, err = c.request("status"); err != nil {
 		return
 	}
 
 	if arg["state"] == "play" {
-		_, err = this.request("pause 1")
+		_, err = c.request("pause 1")
 	} else {
-		_, err = this.request("play")
+		_, err = c.request("play")
 	}
 	return
 }
 
 // Sets crossfading (mixing) between songs.
 // @time: Crossfade time in seconds.
-func (this *Client) Crossfade(time int) (err error) {
-	_, err = this.request("crossfade %d", time)
+func (c *Client) Crossfade(time int) (err error) {
+	_, err = c.request("crossfade %d", time)
 	return
 }
 
 // Toggle pause on/off.
 // @toggle: Specifies whether to pause or resume playback.
-func (this *Client) Pause(toggle bool) (err error) {
+func (c *Client) Pause(toggle bool) (err error) {
 	v := 0
 	if toggle {
 		v = 1
 	}
-	_, err = this.request("pause %d", v)
+	_, err = c.request("pause %d", v)
 	return
 }
 
 // Play the song at the specified position.
 // @pos: Position of song to play.
-func (this *Client) Play(pos int) (err error) {
-	_, err = this.request("play %d", pos)
+func (c *Client) Play(pos int) (err error) {
+	_, err = c.request("play %d", pos)
 	return
 }
 
 // Play the song with the specified id.
 // @id: Id of the song to play.
-func (this *Client) PlayId(id int) (err error) {
-	_, err = this.request("playid %d", id)
+func (c *Client) PlayId(id int) (err error) {
+	_, err = c.request("playid %d", id)
 	return
 }
 
 // Skip to previous song.
-func (this *Client) Previous() (err error) {
-	_, err = this.request("previous")
+func (c *Client) Previous() (err error) {
+	_, err = c.request("previous")
 	return
 }
 
 // Skip to next song.
-func (this *Client) Next() (err error) {
-	_, err = this.request("next")
+func (c *Client) Next() (err error) {
+	_, err = c.request("next")
 	return
 }
 
 // Toggle random mode on/of
 // @toggle: Specifies whether to used random or normal playback.
-func (this *Client) Random(toggle bool) (err error) {
+func (c *Client) Random(toggle bool) (err error) {
 	v := 0
 	if toggle {
 		v = 1
 	}
-	_, err = this.request("random %d", v)
+	_, err = c.request("random %d", v)
 	return
 }
 
 // Toggle repeat mode on/off.
 // @toggle: Specifies whether to ise repeat or not.
-func (this *Client) Repeat(toggle bool) (err error) {
+func (c *Client) Repeat(toggle bool) (err error) {
 	v := 0
 	if toggle {
 		v = 1
 	}
-	_, err = this.request("repeat %d", v)
+	_, err = c.request("repeat %d", v)
 	return
 }
 
 // Skip to specific point in time in song at position @pos.
 // @pos: Position of song.
 // @time: Time in seconds to jump to.
-func (this *Client) Seek(pos, time int) (err error) {
-	_, err = this.request("seek %d %d", pos, time)
+func (c *Client) Seek(pos, time int) (err error) {
+	_, err = c.request("seek %d %d", pos, time)
 	return
 }
 
 // Skip to specific point in time in song at position @pos.
 // @pos: Id of song.
 // @time: Time in seconds to jump to.
-func (this *Client) SeekId(id, time int) (err error) {
-	_, err = this.request("seekid %d %d", id, time)
+func (c *Client) SeekId(id, time int) (err error) {
+	_, err = c.request("seekid %d %d", id, time)
 	return
 }
 
@@ -106,11 +106,11 @@ func (this *Client) SeekId(id, time int) (err error) {
 // @vol: New volume value in range 0-100.
 // @relative: Indicates if our value is an absolute volume, or relative
 // adjustment from the current volume.
-func (this *Client) Volume(vol byte, relative bool) (err error) {
+func (c *Client) Volume(vol byte, relative bool) (err error) {
 	if relative {
 		var a Args
 
-		if a, err = this.request("status"); err != nil {
+		if a, err = c.request("status"); err != nil {
 			return
 		}
 
@@ -125,12 +125,12 @@ func (this *Client) Volume(vol byte, relative bool) (err error) {
 		vol = 100
 	}
 
-	_, err = this.request("setvol %d", vol)
+	_, err = c.request("setvol %d", vol)
 	return
 }
 
 // Stop playback.
-func (this *Client) Stop() (err error) {
-	_, err = this.request("stop")
+func (c *Client) Stop() (err error) {
+	_, err = c.request("stop")
 	return
 }

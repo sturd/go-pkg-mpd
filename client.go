@@ -75,21 +75,21 @@ func Dial(address, password string) (c *Client, err error) {
 
 // Close the open connection.
 // The error returned is an os.Error to satisfy io.Closer;
-func (this *Client) Close() (err error) {
-	if this.conn != nil {
-		this.send("close")
+func (c *Client) Close() (err error) {
+	if c.conn != nil {
+		c.send("close")
 
-		this.reader = nil
-		this.writer = nil
+		c.reader = nil
+		c.writer = nil
 
-		err = this.conn.Close()
-		this.conn = nil
+		err = c.conn.Close()
+		c.conn = nil
 	}
 
 	return
 }
 
-func (this *Client) parseError(line string) error {
+func (c *Client) parseError(line string) error {
 	if strings.HasPrefix(line, "ACK ") {
 		// sig: [errcode@token] {command} message
 		//  ex: [2@0] {enableoutput} wrong number of arguments for "enableoutput"
@@ -99,22 +99,22 @@ func (this *Client) parseError(line string) error {
 	return errors.New(line)
 }
 
-func (this *Client) request(cmd string, arg ...interface{}) (args Args, err error) {
-	if err = this.send(fmt.Sprintf(cmd, arg...)); err != nil {
+func (c *Client) request(cmd string, arg ...interface{}) (args Args, err error) {
+	if err = c.send(fmt.Sprintf(cmd, arg...)); err != nil {
 		return
 	}
-	return this.receive()
+	return c.receive()
 }
 
-func (this *Client) requestList(cmd string, arg ...interface{}) (args []Args, err error) {
-	if err = this.send(fmt.Sprintf(cmd, arg...)); err != nil {
+func (c *Client) requestList(cmd string, arg ...interface{}) (args []Args, err error) {
+	if err = c.send(fmt.Sprintf(cmd, arg...)); err != nil {
 		return
 	}
-	return this.receiveList()
+	return c.receiveList()
 }
 
-func (this *Client) receive() (data Args, err error) {
-	if this.reader == nil {
+func (c *Client) receive() (data Args, err error) {
+	if c.reader == nil {
 		return nil, errors.New("Stream reader is closed.")
 	}
 
@@ -123,7 +123,7 @@ func (this *Client) receive() (data Args, err error) {
 	var pos int
 
 	for {
-		if line, err = this.reader.ReadString('\n'); err != nil {
+		if line, err = c.reader.ReadString('\n'); err != nil {
 			return nil, err
 		}
 
@@ -133,11 +133,11 @@ func (this *Client) receive() (data Args, err error) {
 			}
 
 			if strings.HasPrefix(line, "ACK ") {
-				return nil, this.parseError(line)
+				return nil, c.parseError(line)
 			}
 
 			if pos = strings.Index(line, ":"); line[0:pos] == "error" {
-				return nil, this.parseError(line)
+				return nil, c.parseError(line)
 			}
 
 			data[line[0:pos]] = strings.TrimSpace(line[pos+1:])
@@ -146,18 +146,18 @@ func (this *Client) receive() (data Args, err error) {
 	return
 }
 
-func (this *Client) receiveList() (data []Args, err error) {
+func (c *Client) receiveList() (data []Args, err error) {
 	var line string
 	var pos int
 
-	if this.reader == nil {
+	if c.reader == nil {
 		return nil, errors.New("Stream reader is closed.")
 	}
 
 	a := make(Args)
 
 	for {
-		if line, err = this.reader.ReadString('\n'); err != nil {
+		if line, err = c.reader.ReadString('\n'); err != nil {
 			return nil, err
 		}
 
@@ -170,11 +170,11 @@ func (this *Client) receiveList() (data []Args, err error) {
 			}
 
 			if strings.HasPrefix(line, "ACK ") {
-				return nil, this.parseError(line)
+				return nil, c.parseError(line)
 			}
 
 			if pos = strings.Index(line, ":"); line[0:pos] == "error" {
-				return nil, this.parseError(line)
+				return nil, c.parseError(line)
 			}
 
 			// Lists of entries are not delimited by a special token. We need
@@ -193,11 +193,11 @@ func (this *Client) receiveList() (data []Args, err error) {
 	return
 }
 
-func (this *Client) send(msg string, args ...interface{}) (err error) {
+func (c *Client) send(msg string, args ...interface{}) (err error) {
 	const max_retries = 3
 	var tries, num int
 
-	if this.writer == nil {
+	if c.writer == nil {
 		return errors.New("Stream writer is closed.")
 	}
 
@@ -205,11 +205,11 @@ func (this *Client) send(msg string, args ...interface{}) (err error) {
 	msg += "\n"
 
 	for tries = 0; tries < max_retries; tries++ {
-		if num, err = this.writer.WriteString(msg); num < len(msg) {
+		if num, err = c.writer.WriteString(msg); num < len(msg) {
 			time.Sleep(300000000) // 0.3 seconds between retries
 			continue
 		}
-		this.writer.Flush()
+		c.writer.Flush()
 		break
 	}
 
@@ -217,28 +217,28 @@ func (this *Client) send(msg string, args ...interface{}) (err error) {
 }
 
 // The following methods are here to ensure mpd.Client implements the net.Conn
-// interface. They are not necessarily useful for this particular connection,
+// interface. They are not necessarily useful for c particular connection,
 // but the calls will be passed to the underlying connection.
 
 // Read reads data from the connection.
 // Read can be made to time out and return a net.Error with Timeout() == true
 // after a fixed time limit; see SetTimeout and SetReadTimeout.
-func (this *Client) Read(b []byte) (n int, err error) {
-	return this.conn.Read(b)
+func (c *Client) Read(b []byte) (n int, err error) {
+	return c.conn.Read(b)
 }
 
 // Write writes data to the connection.
 // Write can be made to time out and return a net.Error with Timeout() == true
 // after a fixed time limit; see SetTimeout and SetWriteTimeout.
-func (this *Client) Write(b []byte) (n int, err error) {
-	return this.conn.Write(b)
+func (c *Client) Write(b []byte) (n int, err error) {
+	return c.conn.Write(b)
 }
 
 // LocalAddr returns the local network address.
-func (this *Client) LocalAddr() net.Addr { return this.conn.LocalAddr() }
+func (c *Client) LocalAddr() net.Addr { return c.conn.LocalAddr() }
 
 // RemoteAddr returns the remote network address.
-func (this *Client) RemoteAddr() net.Addr { return this.conn.RemoteAddr() }
+func (c *Client) RemoteAddr() net.Addr { return c.conn.RemoteAddr() }
 
 func isSupportedVersion(ver string) bool {
 	var reg_version *regexp.Regexp
