@@ -25,7 +25,7 @@ type Client struct {
 	ProtocolVersion string
 }
 
-// This Opens a new connection to the specified MPD server and optionally
+// Dial opens a new connection to the specified MPD server and optionally
 // logs in with the given password.
 func Dial(address, password string) (c *Client, err error) {
 	c = new(Client)
