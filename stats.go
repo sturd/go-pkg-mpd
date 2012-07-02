@@ -11,7 +11,7 @@ type Stats struct {
 	Playtime   int
 	Uptime     int
 	DbUpdate   int64
-	DBPlaytime int64
+	DbPlaytime int64
 }
 
 func readStats(a Args) *Stats {
@@ -22,6 +22,6 @@ func readStats(a Args) *Stats {
 	s.Playtime = a.I("playtime")
 	s.Uptime = a.I("uptime")
 	s.DbUpdate = a.I64("db_update")
-	s.DBPlaytime = a.I64("db_playtime")
+	s.DbPlaytime = a.I64("db_playtime")
 	return s
 }
