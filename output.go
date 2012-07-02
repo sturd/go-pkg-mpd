@@ -5,8 +5,8 @@
 package mpd
 
 type Output struct {
-	Id      int
 	Name    string
+	Id      int
 	Enabled bool
 }
 

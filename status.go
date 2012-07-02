@@ -18,8 +18,11 @@ const (
 )
 
 type Status struct {
-	State          PlayState
-	Volume         byte
+	Time           []int
+	Audio          []int
+	MixRampDB      float32
+	MixRampDelay   float32
+	Elapsed        float32
 	Playlist       int
 	PlaylistLength int
 	Song           int
@@ -28,15 +31,12 @@ type Status struct {
 	NextSongId     int
 	CrossFade      int
 	Bitrate        int
-	MixRampDB      float32
-	MixRampDelay   float32
-	Elapsed        float32
+	State          PlayState
+	Volume         byte
 	Single         bool
 	Repeat         bool
 	Random         bool
 	Consume        bool
-	Time           []int
-	Audio          []int
 }
 
 func readStatus(a Args) *Status {

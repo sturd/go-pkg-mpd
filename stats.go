@@ -5,13 +5,13 @@
 package mpd
 
 type Stats struct {
+	DbUpdate   int64
+	DbPlaytime int64
 	Albums     int
 	Artists    int
 	Songs      int
 	Playtime   int
 	Uptime     int
-	DbUpdate   int64
-	DbPlaytime int64
 }
 
 func readStats(a Args) *Stats {
