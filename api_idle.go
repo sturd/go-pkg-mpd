@@ -3,16 +3,16 @@ package mpd
 type SubSystem uint8
 
 const (
-	DatabaseSys SubSystem = iota
-	UpdateSys
-	StoredPlaylistSys
-	PlaylistSys
-	PlayerSys
-	MixerSys
-	OutputSys
-	StickerSys
-	SubscriptionSys
-	MessageSys
+	DatabaseSystem SubSystem = iota
+	UpdateSystem
+	StoredPlaylistSystem
+	PlaylistSystem
+	PlayerSystem
+	MixerSystem
+	OutputSystem
+	StickerSystem
+	SubscriptionSystem
+	MessageSystem
 )
 
 func readSubSystem(a Args) SubSystem {
@@ -20,25 +20,25 @@ func readSubSystem(a Args) SubSystem {
 
 	switch a.S("changed") {
 	case "database":
-		s = DatabaseSys
+		s = DatabaseSystem
 	case "update":
-		s = UpdateSys
+		s = UpdateSystem
 	case "stored_playlist":
-		s = StoredPlaylistSys
+		s = StoredPlaylistSystem
 	case "playlist":
-		s = PlaylistSys
+		s = PlaylistSystem
 	case "player":
-		s = PlayerSys
+		s = PlayerSystem
 	case "mixer":
-		s = MixerSys
+		s = MixerSystem
 	case "output":
-		s = OutputSys
+		s = OutputSystem
 	case "sticker":
-		s = StickerSys
+		s = StickerSystem
 	case "subscription":
-		s = SubscriptionSys
+		s = SubscriptionSystem
 	case "message":
-		s = MessageSys
+		s = MessageSystem
 	}
 	return s
 }
@@ -54,10 +54,34 @@ func (c *Client) Idle() (s SubSystem, err error) {
 	return
 }
 
-func (c *Client) IdleSubSystem(subsystem string) (changed bool, err error) {
+func (c *Client) IdleSubSystem(subsystem SubSystem) (changed bool, err error) {
 	var a Args
+	var s string
 
-	if a, err = c.request("idle %s", subsystem); err != nil {
+	switch subsystem {
+	case DatabaseSystem:
+		s = "database"
+	case UpdateSystem:
+		s = "update"
+	case StoredPlaylistSystem:
+		s = "stored_playlist"
+	case PlaylistSystem:
+		s = "playlist"
+	case PlayerSystem:
+		s = "player"
+	case MixerSystem:
+		s = "mixer"
+	case OutputSystem:
+		s = "output"
+	case StickerSystem:
+		s = "sticker"
+	case SubscriptionSystem:
+		s = "subscription"
+	case MessageSystem:
+		s = "message"
+	}
+
+	if a, err = c.request("idle %s", s); err != nil {
 		return
 	}
 
