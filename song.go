@@ -7,6 +7,7 @@ package mpd
 type Song struct {
 	File         string
 	Artist       string
+	AlbumArtist  string
 	Album        string
 	Title        string
 	LastModified string
@@ -24,6 +25,7 @@ func readSong(a Args) *Song {
 	s.Pos = a.I("Pos")
 	s.Date = a.I("Date")
 	s.Artist = a.S("Artist")
+	s.AlbumArtist = a.S("AlbumArtist")
 	s.Album = a.S("Album")
 	s.Title = a.S("Title")
 	s.Track = a.I("Track")
