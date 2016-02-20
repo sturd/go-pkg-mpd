@@ -10,6 +10,7 @@ type Song struct {
 	AlbumArtist  string
 	Album        string
 	Title        string
+	Genre        string
 	LastModified string
 	Date         int
 	Id           int
@@ -28,6 +29,7 @@ func readSong(a Args) *Song {
 	s.AlbumArtist = a.S("AlbumArtist")
 	s.Album = a.S("Album")
 	s.Title = a.S("Title")
+	s.Genre = a.S("Genre")
 	s.Track = a.I("Track")
 	s.Time = a.I("Time")
 	s.LastModified = a.S("Last-Modified")
