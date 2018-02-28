@@ -115,9 +115,8 @@ func (c *Client) ListInfo(path string) (list []*Song, err error) {
 //
 //     path: An optional directory path to act as the root of the list.
 //           If omitted, we assume the music root as defined in mpd.conf.
-func (c *Client) Ls(path string) (list []string, err error) {
+func (c *Client) Ls(path string) (list []*Song, err error) {
 	var a []Args
-	var v string
 
 	str := "lsinfo"
 
@@ -129,12 +128,9 @@ func (c *Client) Ls(path string) (list []string, err error) {
 		return
 	}
 
-	list = make([]string, 0, len(a))
-
+	list = make([]*Song, 0, len(a))
 	for _, m := range a {
-		for _, v = range m {
-			list = append(list, v)
-		}
+		list = append(list, readSong(m))
 	}
 
 	return
