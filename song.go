@@ -6,6 +6,7 @@ package mpd
 
 type Song struct {
 	File         string
+	Directory  	 string
 	Artist       string
 	AlbumArtist  string
 	Album        string
@@ -25,6 +26,7 @@ type Song struct {
 func readSong(a Args) *Song {
 	s := new(Song)
 	s.File = a.S("file")
+	s.Directory = a.S("directory")
 	s.Id = a.I("Id")
 	s.Pos = a.I("Pos")
 	s.Date = a.I("Date")
