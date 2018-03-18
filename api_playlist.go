@@ -208,6 +208,21 @@ func (c *Client) ListPlaylistFiles(name string) (v []string, err error) {
 	return
 }
 
+// ListPlaylists lists all playlists stored on the server
+//
+func (c *Client) ListPlaylists() (p []*Playlist, err error) {
+	var a []Args
+	if a, err = c.requestList("listplaylists"); err != nil {
+		return
+	}
+
+	for _, k := range a {
+		p = append(p, readPlaylist(k))
+	}
+
+	return
+}
+
 // ListPlaylistSongs reports songs in playlist named `name`.
 //
 //     name: Name of the playlist file *without* the path and file extension.
